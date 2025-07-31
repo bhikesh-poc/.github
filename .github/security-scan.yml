@@ -1,0 +1,39 @@
+name: Org-Wide Security Scan
+
+on:
+  workflow_call:
+    inputs:
+      repository:
+        description: 'The repository name (e.g., owner/repo-name)'
+        required: true
+        type: string
+    secrets:
+      GH_TOKEN:
+        description: 'GitHub Token for advanced actions if needed'
+        required: true
+      # Example for a hypothetical external scanner API key
+      EXTERNAL_SCANNER_API_KEY:
+        description: 'API Key for an external security scanner'
+        required: false # Make optional if not always used
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repository }}
+          token: ${{ secrets.GH_TOKEN }} # Use the passed token
+
+      - name: Run lightweight security linter (e.g., using a simple shell script)
+        run: |
+          echo "Simulating security scan for ${{ inputs.repository }}"
+          # For a real scan, you might use a tool like bandit, semgrep, snyk, etc.
+          # Example: A simple check for common hardcoded secrets (highly simplified!)
+          grep -r "API_KEY" . || true # '|| true' to not fail if nothing found
+          grep -r "PASSWORD" . || true
+
+      - name: Publish Scan Results (Optional)
+        # You might upload artifacts or post results to a central service
+        run: echo "Scan results for ${{ inputs.repository }} published."
